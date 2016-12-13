@@ -14,10 +14,8 @@
 #include <iomanip>
 using namespace std;
 
-
 /************************
- INSERT
- 
+ INSERT 
  //returns true if a process was removed from the CPU and put into the queue
  ************************/
 bool DArray::insert(Process p, string typeOfScheduling)

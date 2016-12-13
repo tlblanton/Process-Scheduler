@@ -16,6 +16,5 @@ Process.o: Process.cpp
 DArray.o: DArray.cpp
 	$(CC) $(CFLAGS) DArray.cpp
 
-
 clean:
 	rm *o myscheduler

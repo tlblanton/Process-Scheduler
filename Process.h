@@ -11,7 +11,6 @@
 
 struct Process
 {
-
     int name, arrivalTime, burstTime;
     double waitTime, turnAroundTime, completionTime, responseTime, contextSwitches, executionStartTime;
     bool completed;

@@ -16,7 +16,6 @@ using namespace std;
 //#define EXIT_FAILURE -1
 DArray processArr("ProcessArr");
 
-
 int main(int argc, char *argv[])
 {
     string typeOfScheduling, fileName;
