@@ -13,14 +13,18 @@
 #include "DArray.h"
 using namespace std;
 
-//#define EXIT_FAILURE -1
 DArray processArr("ProcessArr");
 
 int main(int argc, char *argv[])
 {
     string typeOfScheduling, fileName;
     int quantum = -1;
-    
+
+    /*
+     * Logic for basic input and output.
+     * The program is to be run from the command line.
+     * Proper call could be "./a.out inputFIle.txt 1 outputFile.txt" where 1 would specify the SRTF algorithm
+     */
     if(argc < 3 || atoi(argv[2]) > 2 || atoi(argv[2]) < 0)
     {
         cerr << "Improperly formatted command line arguments. Program terminated." << endl;

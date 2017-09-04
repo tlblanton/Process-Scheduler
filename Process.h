@@ -11,14 +11,16 @@
 
 struct Process
 {
+
     int name, arrivalTime, burstTime;
     double waitTime, turnAroundTime, completionTime, responseTime, contextSwitches, executionStartTime;
-    bool completed;
+    bool completed; //flag that is set to true when process has simulated its execution.
     
-    //constructor
-    Process(int n, int aT, int bT)
+    // constructor
+    // every process sould come in with a known name, arrivalTime, and burstTime
+    Process(int nm, int aT, int bT)
     {
-        name = n;
+        name = nm;
         arrivalTime = aT;
         burstTime = bT;
         waitTime = 0;
@@ -36,7 +38,8 @@ struct Process
         arrivalTime = -1;
         burstTime = -1;
     }
-    
+
+    // Overloaded assignment operator so processes can easily be moved around and copied
     void operator =(Process & pr)
     {
         name = pr.name;

@@ -16,7 +16,7 @@ using namespace std;
 
 /************************
  INSERT 
- //returns true if a process was removed from the CPU and put into the queue
+ returns true if a process was removed from the CPU and put into the queue
  ************************/
 bool DArray::insert(Process p, string typeOfScheduling)
 {
@@ -46,6 +46,7 @@ bool DArray::insert(Process p, string typeOfScheduling)
 
 /************************
  RESIZE
+ creates new array that is 100x the size of the original (data sets are quite large)
  ************************/
 void DArray::resize()
 {
@@ -68,6 +69,7 @@ void DArray::resize()
 
 /************************
  READ IN
+ reads in processes from a properly formatted text file and places them in a dynamic array.
  ************************/
 int DArray::readIn(string fileName, string typeOfScheduling)
 {
@@ -97,6 +99,7 @@ int DArray::readIn(string fileName, string typeOfScheduling)
 
 /************************
  SRTF ORDER
+ orders elements in ascending order of remaining processing time using bubble sort (as specified by assignment)
  ************************/
 void DArray::SRTFOrder()
 {
@@ -125,6 +128,7 @@ void DArray::SRTFOrder()
 
 /************************
  PID ORDER
+ puts processes in ascending order by the Process IDs
  ************************/
 void DArray::pidOrder()
 {
@@ -153,6 +157,7 @@ void DArray::pidOrder()
 
 /************************
  INDEX
+ returns a process's index in the dynamic array or -1 if the item does not exist
  ************************/
 int DArray::index(int name)
 {
@@ -167,7 +172,8 @@ int DArray::index(int name)
 }
 
 /************************
-DISPLAY
+ DISPLAY
+ displays results of different process-scheduling algorithms to the user
  ************************/
 void DArray::display(string typeOfScheduling, int quantum)
 {
@@ -253,12 +259,13 @@ void DArray::display(string typeOfScheduling, int quantum)
 
 /************************
  ARE ALL PROCESSES COMPLETED
+ checks if all processes have been given enough time in the simulated CPU to run
  ************************/
 bool DArray::AreAllProcessesCompleted()
 {
     for(int i = 0; i < size; ++i)
     {
-        if(arr[i].completed == false)
+        if(!arr[i].completed)
         {
             return false;
         }
@@ -269,6 +276,7 @@ bool DArray::AreAllProcessesCompleted()
 
 /************************
  POP
+ remove top element from the dynamic array
  ************************/
 void DArray::pop()
 {
@@ -285,30 +293,42 @@ void DArray::pop()
 
 /************************
  FCFS
+ first-come, first-served algorithm
+ this algorithm simulates the process of performing these calculations by hand using a Gantt Chart
+ processes are executed in the order that the reach the CPU
  ************************/
 void DArray::FCFS()
 {
+    //creating a gantt array to simulate gantt chart operations (adding, removing, processing, etc)
     DArray ganttArr;
     int timer = 0;
     int currentProcess = 0;
     int contextSwitchingTime = 0;
+
+    //loop starts at a count of zero and continues while there are still processes that need time in the CPU
     while(!AreAllProcessesCompleted())
     {
-        //if a process arrives at this time, then add it to the new array
+        //if a process arrives at this time ("timer"), then add it to the new array
         for(int i = 0; i < size; ++i)
         {
             if(arr[i].arrivalTime == timer)
             {
+                //Adding a new process incurs time for a context switch
                 ++contextSwitchingTime;
                 ganttArr.insert(arr[i], "FCFS");
             }
         }
-        //If the ganttArray is not empty, then subtract 1 from the top processes in it
+
+        /*
+         * Algorithm for simulating execution of processes that have entered in to the CPU and are waiting
+         * If the ganttArray is not empty, then subtract 1 from the top processes in it, simulating that it has had time to execute.
+         */
         if(ganttArr.size != 0)
         {
             ganttArr.arr[currentProcess].burstTime--;
             if(ganttArr.arr[currentProcess].executionStartTime == -1)
             {
+                //record execution start time of currently executing process.
                 ganttArr.arr[currentProcess].executionStartTime = timer;
             }
             for(int i = 0; i < ganttArr.size; ++i)
@@ -318,6 +338,8 @@ void DArray::FCFS()
                     ++arr[i].waitTime;
                 }
             }
+
+            //if process is finished executing then calculate and record all relevant data
             if(ganttArr.arr[currentProcess].burstTime == 0)
             {
                 arr[currentProcess].completionTime = timer+1;
@@ -334,18 +356,25 @@ void DArray::FCFS()
 
 /************************
  SRTF
+ shortest remaning time first algorithm
+ this algorithm simulates the process of performing these calculations by hand using a Gantt Chart
+ procsses are executed in order of their remaining time
  ************************/
 void DArray::SRTF()
 {
+    //declare gant array that will house all processes as they simulate coming in to the CPU
     DArray ganttArr;
     int timer = 0;
     double actualTime = 0;
     int currentProcess = 0;
     int contextSwitchingTime = 0;
     bool justPopped = false;
-    
+
     while(!AreAllProcessesCompleted())
     {
+        /*
+         * Logic for handling incoming processes
+         */
         for(int i = 0; i < size; ++i)
         {
             if(arr[i].arrivalTime == timer)
@@ -353,9 +382,6 @@ void DArray::SRTF()
                 int previousTop = ganttArr.arr[currentProcess].name;
                 ganttArr.insert(arr[i], "SRTF");
                 int justInsertedName = arr[i].name;
-                
-                //once you've inserted, if there was context switches before you then you need to check if actualTime equals timer. If it does not, then you |||| at sub
-                
                 
                 //incrementing waitTime by 0.5 for each contextSwitch that has happen before the justInserted process was inserted.
                 for(int f = 0; f < contextSwitchingTime; ++f)
@@ -368,18 +394,17 @@ void DArray::SRTF()
                 }
                 
                 
-                //If the thing that was on top had been moved to the bottom, then this incurs context switch time
+                //If the process that was on top had been moved to the bottom, then this incurs context switch time
                 if(ganttArr.arr[currentProcess].name != previousTop && ganttArr.size != 1)
                 {
                     int sub = ganttArr.index(previousTop);
-                    
-                    
+
                     for(int f = 0; f < contextSwitchingTime; ++f)
                     {
                         ganttArr.arr[currentProcess].waitTime += 0.5;
                     }
                    
-                    //if you did NOT just pop
+                    //if you did NOT just pop, then the current process is still on top and needs to have context switching time added, and response time incremented
                     if(!justPopped)
                     {
                         ++contextSwitchingTime;
@@ -397,7 +422,10 @@ void DArray::SRTF()
                 }
             }
         }
-        
+
+        /*
+         * Algorithm for simulating execution of processes that have entered in to the CPU and are waiting
+         */
         if(ganttArr.size != 0)
         {
             --ganttArr.arr[currentProcess].burstTime;
@@ -412,6 +440,7 @@ void DArray::SRTF()
                     ++ganttArr.arr[x].waitTime;
                 }
             }
+            //If the current process has finished its execution, collect relevant information and remove it from the simulated CPU and gantt chart
             if(ganttArr.arr[currentProcess].burstTime == 0)
             {
                 int sub = index(ganttArr.arr[currentProcess].name);
@@ -423,7 +452,6 @@ void DArray::SRTF()
                 arr[sub].contextSwitches = ganttArr.arr[currentProcess].contextSwitches;
                 ganttArr.pop();
                 justPopped = true;
-                
             }
         }
         ++timer;
@@ -435,6 +463,10 @@ void DArray::SRTF()
 
 /************************
  RR
+ round-robin
+ this algorithm simulates the process of performing these calculations by hand using a Gantt Chart
+ procsses are executed in specific increments of time and keep looping until they are finished.
+ input: quantum - the max number of consecutive iterations (simulated seconds) a process can have in the CPU
  ************************/
 void DArray::RR(int quantum)
 {
@@ -443,11 +475,10 @@ void DArray::RR(int quantum)
     double actualTime = 0;
     int currentProcess = 0;
     bool rotate = false;
-    //int blah = 0, finished = 0;
-    
+
     while(!AreAllProcessesCompleted())
     {
-        //cout << "blah: " << blah++ << endl;
+
         for(int i = 0; i < quantum; ++i)
         {
             for(int x = 0; x < size; ++x)
@@ -457,10 +488,15 @@ void DArray::RR(int quantum)
                     ganttArr.insert(arr[x], "RR");
                 }
             }
-            
+
+            /*
+             * Logic for handling processes moving arround in the round-robin line and entering into it
+             */
+
+            //if rotate is true then the current process has been in the CPU executing for n
+            // iterations and now must cede the CPu to the next process in line.
             if(rotate)
             {
-                //++contextSwitches;
                 actualTime += 0.5;
                 for(int f = 0; f < ganttArr.size; ++f)
                 {
@@ -473,7 +509,10 @@ void DArray::RR(int quantum)
                 ganttArr.insert(temp, "RR");
                 rotate = false;
             }
-            
+
+            /*
+             * Algorithm for executing process whose turn it is to execute
+             */
             if(ganttArr.size != 0)
             {
                 --ganttArr.arr[currentProcess].burstTime;
@@ -489,7 +528,8 @@ void DArray::RR(int quantum)
                     }
                 }
             }
-            
+
+            //logic for when current process has finished executing
             if(ganttArr.size != 0 && ganttArr.arr[currentProcess].burstTime == 0)
             {
                 int sub = index(ganttArr.arr[currentProcess].name);
@@ -505,18 +545,17 @@ void DArray::RR(int quantum)
                     cin.get();
                 }
                 ganttArr.pop();
-                //cout << "SOMETHING JUST FINISHED: " << finished++ << endl;
                 ++timer;
                 ++actualTime;
                 break;
             }
+            //if quantum is about to be reached then rotate is set to true, so we know to move the round-robin line
             if(i == (quantum-1))
             {
                 rotate = true;
             }
             ++timer;
             ++actualTime;
-            
         }
     }
 }

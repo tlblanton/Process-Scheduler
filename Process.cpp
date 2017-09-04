@@ -7,3 +7,8 @@
 //
 
 #include "Process.h"
+
+/*
+ * Process objects are purely objects whose properties are handled elsewhere.
+ * They are a complex type created to be held by the dynamic array
+ */

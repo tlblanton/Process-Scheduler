@@ -21,7 +21,8 @@ public:
     int size;
     int contextSwitches;
     string name = "";
-    
+
+    // Constructors for new dynamic array
     DArray()
     {
         capacity = 5;
@@ -37,36 +38,33 @@ public:
         size = 0;
         contextSwitches = 0;
     }
-    
+
+    // Dynamic array functions
     void resize();
-    
     int index(int name);
-    
     void pidOrder();
-    
     bool insert(Process p, string typeOfScheduling);
-    
     int readIn(string fileName, string typeOfScheduling);
-    
     void SRTFOrder();
-    
     void display(string typeOfScheduling, int quantum = 0);
-    
     void pop();
-    
     bool AreAllProcessesCompleted();
-        
+
+    /*
+     * Process-scheduling functions
+     * First come first served
+     * Shortest Remaining time first
+     * Round-robin
+     */
     void FCFS();
     void SRTF();
     void RR(int quantum);
-    
+
+    // Destructor
     ~DArray()
     {
-        //std::cout << "DESTRUCTING " << name << " HERE" << endl;
-        if(size > 0)
-        {
+        // Deleting allocated memory
             delete []arr;
-        }
     }
 
     
